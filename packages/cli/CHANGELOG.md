@@ -1,5 +1,14 @@
 # sv
 
+## 0.9.3
+### Patch Changes
+
+
+- fix(migrate): allow `migrate` to run without specifying a migration arg ([#676](https://github.com/sveltejs/cli/pull/676))
+
+
+- fix(add): improve robustness of add-on args parsing ([#681](https://github.com/sveltejs/cli/pull/681))
+
 ## 0.9.2
 ### Patch Changes
 
