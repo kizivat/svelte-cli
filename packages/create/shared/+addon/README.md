@@ -25,7 +25,7 @@ To run the add-on, we'll first need a project to apply it to.
 Create the project with the following script:
 
 ```shell
-npm run create-temp
+npm run create
 ```
 
 This will create a SvelteKit project in the `temp` directory.
@@ -33,7 +33,7 @@ This will create a SvelteKit project in the `temp` directory.
 To execute the add-on, run:
 
 ```shell
-npm start
+npm run add
 ```
 
 ## Sharing your add-on
