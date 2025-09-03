@@ -1,5 +1,5 @@
 node_modules
-temp
+testing/
 
 # Output
 .output
@@ -9,7 +9,6 @@ temp
 /.svelte-kit
 /build
 /dist
-temp
 
 # OS
 .DS_Store
