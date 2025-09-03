@@ -1,4 +1,4 @@
 packages:
   - 'packages/*'
   - '!.test-tmp/**'
-  - 'temp'
+  - '!new-add-on/**'

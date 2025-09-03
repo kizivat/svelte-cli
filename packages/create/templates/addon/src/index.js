@@ -32,8 +32,14 @@ export default defineAddon({
 		sv.file('src/routes/+page.svelte', (content) => {
 			if (!options.demo) return content;
 			const { script, generateCode, template } = parseSvelte(content, { typescript });
-			imports.addDefault(script.ast, { from: '$lib/add-on/DemoComponent.svelte', as: 'DemoComponent' });
-			return generateCode({ script: script.generateCode(), template: template.generateCode() + '\n\n<DemoComponent />' });
+			imports.addDefault(script.ast, {
+				from: '$lib/add-on/DemoComponent.svelte',
+				as: 'DemoComponent'
+			});
+			return generateCode({
+				script: script.generateCode(),
+				template: template.generateCode() + '\n\n<DemoComponent />'
+			});
 		});
 	}
 });

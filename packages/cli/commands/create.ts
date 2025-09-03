@@ -182,7 +182,7 @@ async function createProject(cwd: ProjectPath, options: Options) {
 	};
 
 	// TODO JYC: no add-ons for addon template
-	if (options.addOns && options.template !== 'add-on') {
+	if (options.addOns && options.template !== 'addon') {
 		// `runAddCommand` includes installing dependencies
 		const { nextSteps, packageManager: pm } = await runAddCommand(
 			{

@@ -20,7 +20,7 @@ Create the project with the following script:
 npm run create
 ```
 
-This will create a SvelteKit project in the `testing` directory.
+This will create a SvelteKit project in the `demo` directory.
 
 To execute the add-on, run:
 
