@@ -1,11 +1,11 @@
 {
-	"name": "~TODO~",
+	"name": "~SV-NAME-TODO~",
 	"version": "0.0.0",
 	"type": "module",
 	"license": "MIT",
 	"scripts": {
-		"create": "sv create testing --types ts --template minimal --no-add-ons",
-		"add": "sv add -C testing --community file:../ --no-git-check",
+		"create": "sv create demo --types ts --template minimal --no-add-ons",
+		"add": "sv add -C demo --community file:../ --no-git-check",
 		"test": "vitest run"
 	},
 	"files": ["src", "!src/**/*.test.*"],

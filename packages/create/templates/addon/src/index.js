@@ -19,7 +19,7 @@ export default defineAddon({
 	run: ({ sv, options, typescript }) => {
 		sv.file('src/lib/add-on/addon-template-demo.txt', (content) => {
 			if (!options.demo) return content;
-			return 'This is a text file made by the Community Addon Template demo!';
+			return 'This is a text file made by the Community Addon Template demo! with your add-on: ~SV-NAME-TODO~!';
 		});
 
 		sv.file('src/lib/add-on/DemoComponent.svelte', (content) => {

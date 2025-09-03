@@ -61,7 +61,7 @@ function write_template_files(template: string, types: LanguageType, name: strin
 		const dest = path.join(cwd, file.name);
 		mkdirp(path.dirname(dest));
 
-		fs.writeFileSync(dest, file.contents.replace(/~TODO~/g, name));
+		fs.writeFileSync(dest, file.contents.replace(/~SV-NAME-TODO~/g, name));
 	});
 }
 
@@ -84,7 +84,7 @@ function write_common_files(cwd: string, options: Options, name: string) {
 		} else {
 			const dest = path.join(cwd, file.name);
 			mkdirp(path.dirname(dest));
-			fs.writeFileSync(dest, file.contents);
+			fs.writeFileSync(dest, file.contents.replace(/~SV-NAME-TODO~/g, name));
 		}
 	});
 

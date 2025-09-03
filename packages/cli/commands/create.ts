@@ -143,7 +143,7 @@ async function createProject(cwd: ProjectPath, options: Options) {
 			},
 			language: (o) => {
 				if (options.types) return Promise.resolve(options.types);
-				if (o.results.template === 'add-on') return Promise.resolve('none'); // TODO JYC
+				if (o.results.template === 'addon') return Promise.resolve('none'); // TODO JYC
 				return p.select<LanguageType>({
 					message: 'Add type checking with TypeScript?',
 					initialValue: 'typescript',
