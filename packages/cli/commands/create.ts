@@ -143,7 +143,7 @@ async function createProject(cwd: ProjectPath, options: Options) {
 			},
 			language: (o) => {
 				if (options.types) return Promise.resolve(options.types);
-				if (o.results.template === 'addon') return Promise.resolve('none'); // TODO JYC
+				if (o.results.template === 'add-on') return Promise.resolve('none'); // TODO JYC
 				return p.select<LanguageType>({
 					message: 'Add type checking with TypeScript?',
 					initialValue: 'typescript',
@@ -167,7 +167,7 @@ async function createProject(cwd: ProjectPath, options: Options) {
 	createKit(projectPath, {
 		name: path.basename(projectPath),
 		template,
-		types: language
+		types: language as LanguageType // TODO JYC not sure why?!
 	});
 
 	p.log.success('Project created');
@@ -182,7 +182,7 @@ async function createProject(cwd: ProjectPath, options: Options) {
 	};
 
 	// TODO JYC: no add-ons for addon template
-	if (options.addOns && options.template !== 'addon') {
+	if (options.addOns && options.template !== 'add-on') {
 		// `runAddCommand` includes installing dependencies
 		const { nextSteps, packageManager: pm } = await runAddCommand(
 			{
