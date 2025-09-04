@@ -71,9 +71,9 @@ function formatDescription(arg: Option | Argument): string {
 	return output;
 }
 
-type MaybePromise = () => Promise<void> | void;
-
-export async function runCommand(action: MaybePromise): Promise<void> {
+export async function runCommand(
+	action: () => Promise<{ actionName: string; argsFormatted: string[] }>
+): Promise<void> {
 	try {
 		p.intro(`Welcome to the Svelte CLI! ${pc.gray(`(v${pkg.version})`)}`);
 
@@ -85,7 +85,11 @@ export async function runCommand(action: MaybePromise): Promise<void> {
 			);
 		}
 
-		await action();
+		const { actionName, argsFormatted } = await action();
+
+		const argsToLine = [`npx sv ${actionName}`, ...argsFormatted].join(' ');
+		p.log.message(`${[`Next time you can run:`, argsToLine].map(pc.gray).join('\n')}`);
+
 		p.outro("You're all set!");
 	} catch (e) {
 		if (e instanceof UnsupportedError) {

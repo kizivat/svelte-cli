@@ -192,10 +192,12 @@ export const add = new Command('add')
 
 		common.runCommand(async () => {
 			const selectedAddonIds = selectedAddons.map(({ id }) => id);
-			const { nextSteps } = await runAddCommand(options, selectedAddonIds);
+			const { nextSteps, argsFormatted } = await runAddCommand(options, selectedAddonIds);
 			if (nextSteps.length > 0) {
 				p.note(nextSteps.join('\n'), 'Next steps', { format: (line) => line });
 			}
+
+			return { actionName: 'add', argsFormatted };
 		});
 	});
 
@@ -203,7 +205,7 @@ type SelectedAddon = { type: 'official' | 'community'; addon: AddonWithoutExplic
 export async function runAddCommand(
 	options: Options,
 	selectedAddonIds: string[]
-): Promise<{ nextSteps: string[]; packageManager?: AgentName | null }> {
+): Promise<{ nextSteps: string[]; packageManager?: AgentName | null; argsFormatted: string[] }> {
 	const selectedAddons: SelectedAddon[] = selectedAddonIds.map((id) => ({
 		type: 'official',
 		addon: getAddonDetails(id)
@@ -467,8 +469,10 @@ export async function runAddCommand(
 	}
 
 	// ask remaining questions
+	const argsFormatted: string[] = [];
 	for (const { addon, type } of selectedAddons) {
 		const addonId = addon.id;
+		const addonArgsFormatted: string[] = [];
 		const questionPrefix = selectedAddons.length > 1 ? `${addon.id}: ` : '';
 
 		let values: QuestionValues = {};
@@ -522,12 +526,20 @@ export async function runAddCommand(
 			}
 
 			values[questionId] = answer;
+			addonArgsFormatted.push(`${questionId}:${answer}`);
+		}
+
+		if (addonArgsFormatted.length > 0) {
+			argsFormatted.push(`${addonId}=${addonArgsFormatted.join('+')}`);
+		} else {
+			argsFormatted.push(`${addonId}`);
 		}
 	}
 
 	// we'll return early when no addons are selected,
 	// indicating that installing deps was skipped and no PM was selected
-	if (selectedAddons.length === 0) return { packageManager: null, nextSteps: [] };
+	if (selectedAddons.length === 0)
+		return { packageManager: null, nextSteps: [], argsFormatted: [] };
 
 	// apply addons
 	const officialDetails = Object.keys(official).map((id) => getAddonDetails(id));
@@ -593,7 +605,7 @@ export async function runAddCommand(
 		})
 		.filter((msg) => msg !== undefined);
 
-	return { nextSteps, packageManager };
+	return { nextSteps, packageManager, argsFormatted };
 }
 
 /**

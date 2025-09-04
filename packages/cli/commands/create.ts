@@ -62,7 +62,10 @@ export const create = new Command('create')
 		const cwd = v.parse(ProjectPathSchema, projectPath);
 		const options = v.parse(OptionsSchema, opts);
 		common.runCommand(async () => {
-			const { directory, addOnNextSteps, packageManager } = await createProject(cwd, options);
+			const { directory, addOnNextSteps, packageManager, argsFormatted } = await createProject(
+				cwd,
+				options
+			);
 			const highlight = (str: string) => pc.bold(pc.cyan(str));
 
 			let i = 1;
@@ -101,6 +104,8 @@ export const create = new Command('create')
 			steps.push('', `Stuck? Visit us at ${pc.cyan('https://svelte.dev/chat')}`);
 
 			p.note(steps.join('\n'), "What's next?", { format: (line) => line });
+
+			return { actionName: 'create', argsFormatted };
 		});
 	});
 
@@ -163,8 +168,9 @@ async function createProject(cwd: ProjectPath, options: Options) {
 	);
 
 	const projectPath = path.resolve(directory);
+	const projectName = path.basename(projectPath);
 	createKit(projectPath, {
-		name: path.basename(projectPath),
+		name: projectName,
 		template,
 		types: language
 	});
@@ -180,9 +186,14 @@ async function createProject(cwd: ProjectPath, options: Options) {
 		if (packageManager) await installDependencies(packageManager, projectPath);
 	};
 
+	let addOnArgsFormatted: string[] = [];
 	if (options.addOns) {
 		// `runAddCommand` includes installing dependencies
-		const { nextSteps, packageManager: pm } = await runAddCommand(
+		const {
+			nextSteps,
+			packageManager: pm,
+			argsFormatted: af
+		} = await runAddCommand(
 			{
 				cwd: projectPath,
 				install: options.install,
@@ -194,6 +205,7 @@ async function createProject(cwd: ProjectPath, options: Options) {
 		);
 		packageManager = pm;
 		addOnNextSteps = nextSteps;
+		addOnArgsFormatted = af;
 	} else if (options.install) {
 		// `--no-add-ons` was set, so we'll prompt to install deps manually
 		await installDeps(options.install);
@@ -205,5 +217,40 @@ async function createProject(cwd: ProjectPath, options: Options) {
 		await installDeps(options.install);
 	}
 
-	return { directory: projectPath, addOnNextSteps, packageManager };
+	// Build args for next time based on non-default options
+	const argsFormatted = [projectName];
+
+	argsFormatted.push('--template', template);
+
+	if (language === 'typescript') {
+		argsFormatted.push('--types', 'ts');
+	} else if (language === 'checkjs') {
+		argsFormatted.push('--types', 'jsdoc');
+	} else if (language === 'none') {
+		argsFormatted.push('--no-types');
+	}
+
+	// Add install flag if disabled or specific package manager
+	if (addOnArgsFormatted.length > 0) {
+		argsFormatted.push('--no-install');
+	} else if (options.install === false) {
+		argsFormatted.push('--no-install');
+	} else if (packageManager) {
+		argsFormatted.push('--install', packageManager);
+	}
+
+	// Add add-ons
+	argsFormatted.push('--no-add-ons');
+	if (addOnArgsFormatted.length > 0) {
+		argsFormatted.push(
+			`&& npx sv add -C ${projectName} ${addOnArgsFormatted.join(' ')} --no-git-check`
+		);
+		if (options.install === false) {
+			argsFormatted.push('--no-install');
+		} else if (packageManager) {
+			argsFormatted.push('--install', packageManager);
+		}
+	}
+
+	return { directory: projectPath, addOnNextSteps, packageManager, argsFormatted };
 }
